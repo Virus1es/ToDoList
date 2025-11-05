@@ -1,16 +1,26 @@
-import {useState} from "react";
+import { useState, useEffect } from "react";
 import AddTaskForm from "./AddTaskForm.jsx";
 import SearchTaskForm from "./SearchTaskForm.jsx";
 import TodoInfo from "./TodoInfo.jsx";
 import TodoList from "./TodoList.jsx";
 
 const Todo = () => {
-    const [tasks, setTasks] = useState([
-        {id: 'task-1', title: 'Купить молоко', isDone: false},
-        {id: 'task-2', title: 'Погладить кота', isDone: true},
-    ])
+    const [tasks, setTasks] = useState(() => {
+        const savedTasks = localStorage.getItem('tasks')
+
+        if(savedTasks){
+            return JSON.parse(savedTasks)
+        }
+
+        return [
+            {id: 'task-1', title: 'Купить молоко', isDone: false},
+            {id: 'task-2', title: 'Погладить кота', isDone: true},
+        ]
+    })
 
     const [newTaskTitle, setNewTaskTitle] = useState('')
+
+    const [searchQuery, setSearchQuery] = useState('')
 
     const deleteAllTasks = () => {
         const isConfirmed = confirm('Are you sure tou want to delete all?')
@@ -23,7 +33,7 @@ const Todo = () => {
     const deleteTask = (taskId) => {
         setTasks(
             tasks.filter((task) => task.id !== taskId)
-        )
+        );
     }
 
     const toggleTaskComplete = (taskId, isDone) => {
@@ -36,11 +46,7 @@ const Todo = () => {
                 return task
             })
         )
-    }
-
-    const filterTasks = (query) => {
-        console.log(`Поиск по: ${query}`)
-    }
+    };
 
     const addTask = () => {
         if(newTaskTitle.trim().length > 0){
@@ -48,12 +54,22 @@ const Todo = () => {
                 id: crypto?.randomUUID() ?? Date.now().toString(),
                 title: newTaskTitle,
                 isDone: false,
-            }
+            };
 
-            setTasks([...tasks, newTask])
-            setNewTaskTitle('')
+            setTasks([...tasks, newTask]);
+            setNewTaskTitle('');
+            setSearchQuery('');
         }
-    }
+    };
+
+    useEffect(() => {
+        localStorage.setItem('tasks', JSON.stringify(tasks))
+    }, [tasks]);
+
+    const clearSearchQuery = searchQuery.trim().toLowerCase();
+    const filteredTasks = clearSearchQuery.length > 0
+        ? tasks.filter(({ title }) => title.toLowerCase().includes(clearSearchQuery))
+        : null;
 
     return (
         <div className="todo">
@@ -64,7 +80,8 @@ const Todo = () => {
                 addTask={addTask}
             />
             <SearchTaskForm
-                onSearchInput={filterTasks}
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
             />
             <TodoInfo
                 total={tasks.length}
@@ -73,6 +90,7 @@ const Todo = () => {
             />
             <TodoList
                 tasks={tasks}
+                filteredTasks={filteredTasks}
                 onDeleteTaskButtonClick={deleteTask}
                 onTaskCompleteChange={toggleTaskComplete}
             />
