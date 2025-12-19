@@ -89,7 +89,7 @@ const useTasks = () => {
         setSearchQuery,
         newTaskInputRef,
         addTask,
-    }
+    };
 }
 
 export default useTasks;
