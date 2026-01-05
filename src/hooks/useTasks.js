@@ -3,21 +3,23 @@ import tasksAPI from "../api/tasksAPI.js";
 
 const useTasks = () => {
 
-    const [tasks, setTasks] = useState([])
+    const [tasks, setTasks] = useState([]);
 
     const [newTaskTitle, setNewTaskTitle] = useState('');
 
     const [searchQuery, setSearchQuery] = useState('');
 
+    const [disappearingTaskId, setDisappearingTaskId] = useState(null);
+
     const newTaskInputRef = useRef(null);
 
     const deleteAllTasks = useCallback(() => {
-        const isConfirmed = confirm('Are you sure tou want to delete all?')
+        const isConfirmed = confirm('Are you sure tou want to delete all?');
 
         if(isConfirmed){
             tasksAPI
                 .deleteAll(tasks)
-                .then(() => setTasks([]))
+                .then(() => setTasks([]));
         }
     }, [tasks]);
 
@@ -25,10 +27,14 @@ const useTasks = () => {
         tasksAPI
             .delete(taskId)
             .then(() => {
-            setTasks(
-                tasks.filter((task) => task.id !== taskId)
-            );
-        })
+                setDisappearingTaskId(taskId);
+                setTimeout(() => {
+                    setTasks(
+                        tasks.filter((task) => task.id !== taskId)
+                    );
+                    setDisappearingTaskId(null);
+                }, 400);
+        });
     }, [tasks]);
 
     const toggleTaskComplete = useCallback((taskId, isDone) => {
@@ -89,6 +95,7 @@ const useTasks = () => {
         setSearchQuery,
         newTaskInputRef,
         addTask,
+        disappearingTaskId,
     };
 }
 
