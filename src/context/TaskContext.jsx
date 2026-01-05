@@ -20,6 +20,7 @@ export const TasksProvider = (props) => {
         newTaskInputRef,
         addTask,
         disappearingTaskId,
+        appearingTaskId,
     } = useTasks();
 
     const {
@@ -43,6 +44,7 @@ export const TasksProvider = (props) => {
             newTaskInputRef,
             addTask,
             disappearingTaskId,
+            appearingTaskId,
         }}>
             { children }
         </TaskContext.Provider>
