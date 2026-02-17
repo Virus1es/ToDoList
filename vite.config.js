@@ -13,6 +13,16 @@ export default defineConfig(({mode}) => {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url))
       }
-    }
+    },
+    preview: {
+      port: 8080,
+      strictPort: true,
+    },
+    server: {
+      port: 8080,
+      strictPort: true,
+      host: true,
+      origin: "http://localhost:8080",
+    },
   }
 })
