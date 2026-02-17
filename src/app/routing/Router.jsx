@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {BASE_URL} from "@/shared/constants/index.js";
+import {BASE_URL} from "@/shared/constants";
 
 const getCurrentPath = () => {
     const pathname = window.location.pathname;
